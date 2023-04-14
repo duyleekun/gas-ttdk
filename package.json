@@ -1,0 +1,52 @@
+{
+  "name": "gas-sheet",
+  "version": "11.0.0",
+  "description": "GAS for LOLA",
+  "scripts": {
+    "build": "yarn vue:build && yarn gas:build",
+    "upload": "npx clasp push",
+    "deploy": "yarn build && yarn upload",
+    "vue:dev": "vite -c src/vue_sidebar/vite.config.js",
+    "vue:build": "vite build -c src/vue_sidebar/vite.config.js",
+    "vue:preview": "vite preview -c src/vue_sidebar/vite.config.js",
+    "gas:build": "vite build -c src/gas/vite.config.js"
+  },
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.59",
+    "gas-entry-generator": "^2.2.0",
+    "pinia": "^2.0.32",
+    "vite-plugin-singlefile": "^0.13.5",
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "@babel/eslint-parser": "^7.21.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+    "@babel/preset-env": "^7.20.2",
+    "@google/clasp": "^2.4.2",
+    "@types/jest": "^29.5.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "@vue/tsconfig": "^0.1.3",
+    "autoprefixer": "^10.4.14",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-googleappsscript": "^1.0.4",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest": "^27.2.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^29.5.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.7",
+    "tailwindcss": "^3.3.1",
+    "typescript": "~4.8.4",
+    "vite": "^4.1.4",
+    "vite-plugin-css-injected-by-js": "^3.1.0",
+    "vue-tsc": "^1.2.0"
+  }
+}

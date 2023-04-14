@@ -1,0 +1,13 @@
+{
+  "include": ["./env.d.ts", "**/*", "**/*.ts"],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    },
+  },
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
