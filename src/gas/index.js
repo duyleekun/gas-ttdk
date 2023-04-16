@@ -1,16 +1,11 @@
-import { getGmailAliases as localGetGmailAliases, getGmailLabels as localGetGmailLabels } from './gmail';
-import { sendmail as localSendMail } from './server/mail';
-import { doGet as localDoGet } from './server/webapp';
-import { writeRune as localWriteRune } from './sidebar';
+import { fetchArea as localFetchArea } from './sheet';
+import { fetchStations as localFetchStations } from './sheet';
+import { fetchSchedules as localFetchSchedules } from './sheet';
 
 const global = this;
-global.sendmail = localSendMail;
-
-global.doGet = localDoGet;
-
-global.getGmailLabels = localGetGmailLabels;
-global.getGmailAliases = localGetGmailAliases;
-global.writeRune = localWriteRune;
+global.fetchArea = localFetchArea;
+global.fetchStations = localFetchStations;
+// global.fetchArea = localFetchArea;
 
 global.showHelp = () => {
   Browser.msgBox('Help me here');
@@ -21,6 +16,9 @@ global.onOpen = () => {
     SpreadsheetApp.getUi()
       .createMenu("LOLA")
       .addItem('Show sidebar', 'showSidebar')
+      .addItem('fetchArea', 'fetchArea')
+      .addItem('fetchStations', 'fetchStations')
+      .addItem('fetchSchedules', 'fetchSchedules')
       // .addItem('Help', 'showHelp')
       // .addSeparator()
       // .addItem('Credits', 'showCredits')
@@ -33,7 +31,7 @@ global.onOpen = () => {
 global.showSidebar = () => {
   const ui = HtmlService.createTemplateFromFile('vue_sidebar')
     .evaluate()
-    .setTitle('LOLA')
+    .setTitle('TTDK')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(ui);
 };

@@ -3,13 +3,14 @@
   "version": "11.0.0",
   "description": "GAS for LOLA",
   "scripts": {
-    "build": "yarn vue:build && yarn gas:build",
-    "upload": "npx clasp push",
+    "build": "yarn gas:build",
+    "upload": "clasp push -f",
     "deploy": "yarn build && yarn upload",
     "vue:dev": "vite -c src/vue_sidebar/vite.config.js",
     "vue:build": "vite build -c src/vue_sidebar/vite.config.js",
     "vue:preview": "vite preview -c src/vue_sidebar/vite.config.js",
-    "gas:build": "vite build -c src/gas/vite.config.js"
+    "gas:build": "vite build -c src/gas/vite.config.js",
+    "postinstall": "exit 0 ; mkdir -p dist/ && clasp clone --rootDir dist $SCRIPT_ID && mv dist/.clasp.json ./"
   },
   "dependencies": {
     "@types/google-apps-script": "^1.0.59",
