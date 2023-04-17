@@ -4,11 +4,12 @@
  */
 import URLFetchRequest = GoogleAppsScript.URL_Fetch.URLFetchRequest;
 // import {bufferCount, bufferTime, from, mergeMap, toArray} from "rxjs";
-function writeToSheet(sheetName, data : any[]) {
-    const headers : string[] = Object.keys(data[0]);
+function writeToSheet(sheetName, data: any[]) {
+    const headers: string[] = Object.keys(data[0]);
     const sheetData = [headers];
     for (const datum of data) {
-        sheetData.push(headers.map((it) => datum[it]));
+        if (datum)
+            sheetData.push(headers.map((it) => datum[it]));
     }
     let spreadSheet = SpreadsheetApp.getActiveSpreadsheet()
     let sheet = spreadSheet.getSheetByName(sheetName);
@@ -17,12 +18,12 @@ function writeToSheet(sheetName, data : any[]) {
     }
     sheet.clearContents();
 
-    const range =sheet.getRange(1, 1, sheetData.length, sheetData[0].length)
+    const range = sheet.getRange(1, 1, sheetData.length, sheetData[0].length)
     range.getFilter()?.remove()
     range.setValues(sheetData);
     range.createFilter();
     for (const col in headers) {
-        spreadSheet.setNamedRange(`${sheetName}.${headers[col]}`,sheet.getRange(2, parseInt(col)+1, sheetData.length-1, 1))
+        spreadSheet.setNamedRange(`${sheetName}.${headers[col]}`, sheet.getRange(2, parseInt(col) + 1, sheetData.length - 1, 1))
     }
 }
 
@@ -41,8 +42,8 @@ function buildPostRequest(request: MyCommonRequest): URLFetchRequest {
         },
         muteHttpExceptions: false,
     })
-    delete(builtRequest.headers['X-Forwarded-For'])
-    console.log(builtRequest)
+    delete (builtRequest.headers['X-Forwarded-For'])
+    // console.log(builtRequest)
     return builtRequest
 }
 
@@ -72,9 +73,9 @@ function getAreaValues() {
 
 export function fetchStations() {
     const rows = fetchAllJson(getAreaValues().map(area => {
-        return {url: '/Stations/user/getAllExternal', body: {"filter":{"stationArea":area}}}
+        return {url: '/Stations/user/getAllExternal', body: {"filter": {"stationArea": area}}}
     })).map(it => {
-        console.log(it.data.data[0])
+        // console.log(it.data.data[0])
         return it.data.data
     }).flat()
     writeToSheet("Station", rows)
@@ -84,16 +85,20 @@ function getStationIds() {
     return SpreadsheetApp.getActiveSpreadsheet().getRangeByName("Station.stationsId").getDisplayValues().map(i => i[0])
 }
 
-function getStationsByIds(allStationIds) {
+function getStationsByIds(allStationIds, vehicleType) {
     return fetchAllJson(allStationIds.map(stationId => {
-        return {url: '/Stations/user/getListScheduleDate', body: {"stationsId":stationId,"startDate":"15/04/2023","endDate":"15/05/2023","vehicleType":1}}
+        return {
+            url: '/Stations/user/getListScheduleDate',
+            body: {"stationsId": stationId, "startDate": "15/04/2023", "endDate": "15/06/2023", vehicleType}
+        }
     })).map((it, index) => {
-        console.log(it.data[0])
+        // console.log(it.data[0])
         return it.data.map(it => {
-            return {...it, stationId: allStationIds[index]}
+            return {...it, stationId: allStationIds[index], vehicleType}
         })
     }).flat()
 }
+
 export async function fetchSchedules() {
     // console.log('a')
     // const rows = new Promise<any[]>((resolve,reject) => {
@@ -121,14 +126,15 @@ export async function fetchSchedules() {
     // })
     // console.log('b')
     const rows = []
-    rows.push(...getStationIds().reduce((all,ele)=> {
+    rows.push(...getStationIds().reduce((all, ele) => {
         all.push(ele)
-        if (all.length == 50) {
-            rows.push(...getStationsByIds(all))
+        if (all.length == 25) {
+            rows.push(...getStationsByIds(all, "1"))
+            rows.push(...getStationsByIds(all, "10"))
             all = []
         }
         return all
-    },[]))
+    }, []))
 
     writeToSheet("Schedule", await rows)
 
