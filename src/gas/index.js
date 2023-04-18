@@ -1,4 +1,4 @@
-import { fetchArea as localFetchArea } from './sheet';
+import {fetchArea as localFetchArea} from './sheet';
 import { fetchStations as localFetchStations } from './sheet';
 import { fetchSchedules as localFetchSchedules } from './sheet';
 import { saveAndTestLogin as localSaveAndTestLogin } from './sheet';

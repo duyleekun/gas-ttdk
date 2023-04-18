@@ -110,11 +110,35 @@ function getStationIds() {
     return SpreadsheetApp.getActiveSpreadsheet().getRangeByName("Station.stationsId").getDisplayValues().map(i => i[0])
 }
 
-function getStationsByIds(allStationIds, vehicleType) {
+interface StationResponse {
+    stationsId: string
+    stationCode: string
+    stationArea: string
+
+    stationStatus: string
+}
+
+function getStations(fields: string[]) {
+    const fieldValuesMap = fields.reduce((all, field) => {
+        all[field] = SpreadsheetApp.getActiveSpreadsheet().getRangeByName(`Station.${field}`).getDisplayValues().map(i => i[0])
+        return all
+    }, {} as { [a in string]: string[] })
+    const stations = [] as StationResponse[]
+    fieldValuesMap[fields[0]].forEach((_, index) => {
+        const station = fields.reduce((all, field) => {
+            all[field] = fieldValuesMap[field][index]
+            return all
+        }, {} as StationResponse)
+        stations.push(station)
+    })
+    return stations;
+}
+
+function getSchedulesByStationIds(allStationIds, vehicleType) {
     return fetchAllJson(allStationIds.map(stationId => {
         return {
             url: '/Stations/user/getListScheduleDate',
-            body: {"stationsId": stationId, "startDate": "15/04/2023", "endDate": "15/06/2023", vehicleType}
+            body: {"stationsId": stationId, "startDate": "15/04/2023", "endDate": "15/07/2023", vehicleType}
         }
     })).map((it, index) => {
         // console.log(it.data[0])
@@ -123,6 +147,22 @@ function getStationsByIds(allStationIds, vehicleType) {
         })
     }).flat()
 }
+
+function getSchedulesByStations(allStations: StationResponse[], vehicleType) {
+    return fetchAllJson(allStations.map(({stationsId}) => {
+        return {
+            url: '/Stations/user/getListScheduleDate',
+            body: {stationsId, "startDate": "15/04/2023", "endDate": "15/06/2023", vehicleType}
+        }
+    })).map((it, index) => {
+        // console.log(it.data[0])
+        return it.data.map(it => {
+            const {stationsId, stationArea, stationCode, stationStatus} = allStations[index]
+            return {...it, stationId: stationsId, vehicleType, stationArea, stationCode, stationStatus}
+        })
+    }).flat()
+}
+
 
 export async function fetchSchedules() {
     // console.log('a')
@@ -151,16 +191,16 @@ export async function fetchSchedules() {
     // })
     // console.log('b')
     const rows = []
-    rows.push(...getStationIds().reduce((all, ele) => {
+    rows.push(...getStations(['stationsId', 'stationCode', 'stationArea', 'stationStatus']).reduce((all, ele) => {
         all.push(ele)
         if (all.length == 25) {
-            rows.push(...getStationsByIds(all, "1"))
-            rows.push(...getStationsByIds(all, "10"))
+            rows.push(...getSchedulesByStations(all, "1"))
+            rows.push(...getSchedulesByStations(all, "10"))
             all = []
         }
         return all
-    }, []))
+    }, [] as StationResponse[]))
 
-    writeToSheet("Schedule", await rows)
+    writeToSheet("Schedule", rows)
 
 }
