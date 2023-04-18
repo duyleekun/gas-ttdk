@@ -30,16 +30,24 @@ function writeToSheet(sheetName, data: any[]) {
 interface MyCommonRequest {
     url: string
     body: any
+    headers?: any
 }
 
 function buildPostRequest(request: MyCommonRequest): URLFetchRequest {
+    const headers = {
+        'Content-Type': 'application/json;charset=utf-8',
+        ...request.headers
+    }
+
+    const {accessToken} = PropertiesService.getDocumentProperties().getProperties()
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`
+    }
+
     const builtRequest = UrlFetchApp.getRequest('https://api.ttdkapi.ttdk.com.vn' + request.url, {
         method: 'post',
         payload: JSON.stringify(request.body),
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Authorization': 'Bearer XXX',
-        },
+        headers: headers,
         muteHttpExceptions: false,
     })
     delete (builtRequest.headers['X-Forwarded-For'])
@@ -70,6 +78,23 @@ export function fetchArea() {
 function getAreaValues() {
     return SpreadsheetApp.getActiveSpreadsheet().getRangeByName("Area.value").getDisplayValues().map(i => i[0])
 }
+
+export function saveAndTestLogin(username, password) {
+    console.log('saveAndTestLogin', username)
+    const documentProperties = PropertiesService.getDocumentProperties();
+    documentProperties.deleteAllProperties()
+    documentProperties.setProperties({username, password})
+    renewToken()
+}
+
+export function renewToken() {
+    const documentProperties = PropertiesService.getDocumentProperties()
+    const {username, password} = documentProperties.getProperties()
+    console.log('renewToken', username)
+    const {data: {token}} = fetchJson({body: {phoneNumber: username, password}, url: '/AppUsers/loginUserByPhone'})
+    documentProperties.setProperties({accessToken: token})
+}
+
 
 export function fetchStations() {
     const rows = fetchAllJson(getAreaValues().map(area => {

@@ -3,7 +3,7 @@
   "version": "11.0.0",
   "description": "GAS for LOLA",
   "scripts": {
-    "build": "yarn gas:build",
+    "build": "yarn vue:build && yarn gas:build",
     "upload": "clasp push -f",
     "deploy": "yarn build && yarn upload",
     "vue:dev": "vite -c src/vue_sidebar/vite.config.js",

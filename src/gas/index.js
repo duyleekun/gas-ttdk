@@ -1,10 +1,16 @@
 import { fetchArea as localFetchArea } from './sheet';
 import { fetchStations as localFetchStations } from './sheet';
 import { fetchSchedules as localFetchSchedules } from './sheet';
+import { saveAndTestLogin as localSaveAndTestLogin } from './sheet';
+import { renewToken as localRenewToken } from './sheet';
 
 const global = this;
 global.fetchArea = localFetchArea;
 global.fetchStations = localFetchStations;
+global.fetchSchedules = localFetchSchedules;
+global.saveAndTestLogin = localSaveAndTestLogin;
+global.renewToken = localRenewToken;
+
 // global.fetchArea = localFetchArea;
 
 global.showHelp = () => {
@@ -19,6 +25,7 @@ global.onOpen = () => {
       .addItem('fetchArea', 'fetchArea')
       .addItem('fetchStations', 'fetchStations')
       .addItem('fetchSchedules', 'fetchSchedules')
+      .addItem('renewToken', 'renewToken')
       // .addItem('Help', 'showHelp')
       // .addSeparator()
       // .addItem('Credits', 'showCredits')
