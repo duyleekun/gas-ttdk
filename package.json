@@ -10,7 +10,7 @@
     "vue:build": "vite build -c src/vue_sidebar/vite.config.js",
     "vue:preview": "vite preview -c src/vue_sidebar/vite.config.js",
     "gas:build": "vite build -c src/gas/vite.config.js",
-    "postinstall": "exit 0 ; mkdir -p dist/ && clasp clone --rootDir dist $SCRIPT_ID && mv dist/.clasp.json ./"
+    "postinstall": "exit 0 ; mkdir -p dist/ && yarn clasp clone --rootDir dist $SCRIPT_ID && mv dist/.clasp.json ./"
   },
   "dependencies": {
     "@types/google-apps-script": "^1.0.59",
