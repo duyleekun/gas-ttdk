@@ -152,7 +152,7 @@ function getSchedulesByStations(allStations: StationResponse[], vehicleType) {
     return fetchAllJson(allStations.map(({stationsId}) => {
         return {
             url: '/Stations/user/getListScheduleDate',
-            body: {stationsId, "startDate": "15/04/2023", "endDate": "15/06/2023", vehicleType}
+            body: {stationsId, "startDate":  (new Date()).toLocaleDateString("vi"), "endDate": (new Date(Date.now()+1000*60*60*24*60)).toLocaleDateString("vi"), vehicleType}
         }
     })).map((it, index) => {
         // console.log(it.data[0])
@@ -196,6 +196,7 @@ export async function fetchSchedules() {
         if (all.length == 25) {
             rows.push(...getSchedulesByStations(all, "1"))
             rows.push(...getSchedulesByStations(all, "10"))
+            rows.push(...getSchedulesByStations(all, "20"))
             all = []
         }
         return all
